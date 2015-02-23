@@ -20,7 +20,7 @@ generic_get_next_variable_name(char *path, efi_guid_t **guid, char **name)
 
 	/* if only one of guid and name are null, there's no "next" variable,
 	 * because the current variable is invalid. */
-	if ((*guid == NULL && *name != NULL) ||
+	if ((guid && *guid == NULL && *name != NULL) ||
 			(*guid != NULL && *name == NULL)) {
 		errno = EINVAL;
 		return -1;
@@ -49,8 +49,10 @@ generic_get_next_variable_name(char *path, efi_guid_t **guid, char **name)
 		flags |= FD_CLOEXEC;
 		fcntl(fd, F_SETFD, flags);
 
-		*guid = NULL;
-		*name = NULL;
+		if (guid)
+			*guid = NULL;
+		if (name)
+			*name = NULL;
 	}
 
 	struct dirent *de = NULL;
@@ -81,8 +83,10 @@ generic_get_next_variable_name(char *path, efi_guid_t **guid, char **name)
 		strncpy(ret_name, de->d_name, sizeof(ret_name));
 		ret_name[namelen - guidlen - 1] = '\0';
 
-		*guid = &ret_guid;
-		*name = ret_name;
+		if (guid)
+			*guid = &ret_guid;
+		if (name)
+			*name = ret_name;
 		break;
 	}
 
