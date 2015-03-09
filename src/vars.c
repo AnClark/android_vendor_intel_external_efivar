@@ -87,8 +87,8 @@ get_size_from_file(const char *filename, long long int *retsize)
 	if (fd < 0)
 		goto err;
 
-	int rc = read_fd(fd, &buf, &bufsize);
-	if (rc < 0)
+	read_fd(fd, &buf, &bufsize);
+	if (!buf)
 		goto err;
 
 	*retsize = strtoll((char *)buf, NULL, 0);
@@ -188,8 +188,8 @@ vars_get_variable(efi_guid_t guid, const char *name, uint8_t **data,
 	if (fd < 0)
 		goto err;
 
-	rc = read_fd(fd, &buf, &bufsize);
-	if (rc < 0)
+	read_fd(fd, &buf, &bufsize);
+	if (!buf)
 		goto err;
 
 	efi_variable_t *var = (void *)buf;
